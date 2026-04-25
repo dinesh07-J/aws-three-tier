@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UserVault | Three-Tier App</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Background Effects -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="grid-bg"></div>
+
+  <div class="wrapper">
+
+    <!-- ── HEADER ─────────────────────────────── -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🗄️</div>
+        <div>
+          <h1>User<span>Vault</span></h1>
+          <p class="tagline">AWS Three-Tier Architecture · Presentation Layer</p>
+        </div>
+      </div>
+      <div class="tier-pills">
+        <span class="pill pill-blue">☁️ S3 · Presentation</span>
+        <span class="pill pill-cyan">⚙️ EC2 · Application</span>
+        <span class="pill pill-green">🗃️ RDS · Database</span>
+      </div>
+    </header>
+
+    <!-- ── STATS ──────────────────────────────── -->
+    <section class="stats-row">
+      <div class="stat-card accent-blue">
+        <div class="stat-label">Total Users</div>
+        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-sub">stored in RDS MySQL</div>
+      </div>
+      <div class="stat-card accent-cyan">
+        <div class="stat-label">EC2 Server</div>
+        <div class="stat-num sm" id="stat-host">checking…</div>
+        <div class="stat-sub">application tier host</div>
+      </div>
+      <div class="stat-card accent-green">
+        <div class="stat-label">DB Status</div>
+        <div class="stat-num sm" id="stat-db">—</div>
+        <div class="stat-sub">RDS MySQL connection</div>
+      </div>
+      <div class="stat-card accent-amber">
+        <div class="stat-label">Uptime</div>
+        <div class="stat-num sm" id="stat-uptime">—</div>
+        <div class="stat-sub">EC2 server uptime</div>
+      </div>
+    </section>
+
+    <!-- ── MAIN GRID ──────────────────────────── -->
+    <div class="main-grid">
+
+      <!-- Left: Add User Form -->
+      <aside class="panel">
+        <div class="panel-head">
+          <span class="panel-ico">➕</span>
+          <div>
+            <h2>Add New User</h2>
+            <p>POST → /api/users → MySQL INSERT</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="inp-name" placeholder="e.g. Arjun Kumar" />
+          </div>
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="inp-email" placeholder="e.g. arjun@email.com" />
+          </div>
+          <div class="field">
+            <label>Department</label>
+            <input type="text" id="inp-dept" placeholder="e.g. Engineering" />
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <select id="inp-role">
+              <option value="viewer">Viewer</option>
+              <option value="editor">Editor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="addUser()">
+            <span>Add to Database</span>
+          </button>
+
+          <!-- Server info terminal -->
+          <div class="terminal" id="terminal">
+            <div class="term-row"><span class="k">endpoint</span><span class="v" id="t-endpoint">http://localhost:3000</span></div>
+            <div class="term-row"><span class="k">database</span><span class="v">appdb @ RDS MySQL</span></div>
+            <div class="term-row"><span class="k">server  </span><span class="v" id="t-host">connecting…</span></div>
+            <div class="term-row"><span class="k">status  </span><span class="ok" id="t-status">● initialising</span></div>
+          </div>
+
+          <!-- API reference -->
+          <div class="api-list">
+            <div class="api-title">API ENDPOINTS</div>
+            <div class="api-item"><span class="m get">GET</span>/api/users</div>
+            <div class="api-item"><span class="m get">GET</span>/api/users/:id</div>
+            <div class="api-item"><span class="m post">POST</span>/api/users</div>
+            <div class="api-item"><span class="m put">PUT</span>/api/users/:id</div>
+            <div class="api-item"><span class="m del">DEL</span>/api/users/:id</div>
+            <div class="api-item"><span class="m get">GET</span>/health</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right: Users Table -->
+      <section class="panel">
+        <div class="panel-head">
+          <span class="panel-ico">👥</span>
+          <div>
+            <h2>Users</h2>
+            <p>GET /api/users ← EC2 ← RDS SELECT *</p>
+          </div>
+          <button class="btn-refresh" onclick="fetchUsers()" title="Refresh">↻</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="search" placeholder="🔍  Search name or email…" oninput="filterUsers()" />
+          <select id="filter-role" onchange="filterUsers()">
+            <option value="">All Roles</option>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </div>
+        <div id="table-wrap">
+          <div class="loading"><div class="spinner"></div><span>Connecting to EC2…</span></div>
+        </div>
+      </section>
+
+    </div><!-- /main-grid -->
+  </div><!-- /wrapper -->
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
+
+  <!-- JS (the only file that talks to EC2 backend) -->
+  <script src="app.js"></script>
+
+</body>
+</html>
